@@ -1,5 +1,9 @@
+
 import numpy as np
 import Cube_array
+
+
+
 class Corners:
     def __init__(self):
         from Cube_array import cube
@@ -15,11 +19,15 @@ class Corners:
             [cube.frontSide[2, 0].copy(), cube.bottomSide[0, 0].copy(), cube.leftSide[2, 2].copy()],
             [cube.frontSide[2, 2].copy(), cube.bottomSide[0, 2].copy(), cube.rightSide[2, 0].copy()]
         ])
+
+
     def corners_state(self):
         print(f'   [{self.topCorners[0, 0]}]     [{self.topCorners[1, 0]}]\n[{self.topCorners[0, 2]}][{self.topCorners[0, 1]}]     [{self.topCorners[1, 1]}][{self.topCorners[1, 2]}]')
         print(f'\n[{self.topCorners[2, 2]}][{self.topCorners[2, 1]}]     [{self.topCorners[3, 1]}][{self.topCorners[3, 2]}]\n   [{self.topCorners[2, 0]}]     [{self.topCorners[3, 0]}]')
         print(f'\n   [{self.bottomCorners[0, 0]}]     [{self.bottomCorners[1, 0]}]\n[{self.bottomCorners[0, 2]}][{self.bottomCorners[0, 1]}]     [{self.bottomCorners[1, 1]}][{self.bottomCorners[1, 2]}]')
         print(f'\n[{self.bottomCorners[2, 2]}][{self.bottomCorners[2, 1]}]     [{self.bottomCorners[3, 1]}][{self.bottomCorners[3, 2]}]\n   [{self.bottomCorners[2, 0]}]     [{self.bottomCorners[3, 0]}]')
+
+
 
     def solveCorners(self):
         X = np.array(['b', 'y', 'o']) #where the pieces should go
@@ -38,23 +46,16 @@ class Corners:
         if np.all(np.isin(A_corner, X_corner)):
             print("True")
 
-Cube_array.cube.turn('')
+        while np.all(np.isin(C_corner, V)) == True:
+            print("hhhh")
+
+
+
 corners = Corners()
 
+
+
 corners.corners_state()
-corners.solveCorners()
+
 #to make turns work define Corners() as a new variable after coding the turns
 #possibly consider removing all classes or figure out new way of making turns easier
-
-
-
-
-
-
-
-
-
-
-
-
-
