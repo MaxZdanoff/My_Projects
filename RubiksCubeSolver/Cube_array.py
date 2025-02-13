@@ -32,7 +32,40 @@ class RubiksCube:
             ['g', 'y', 'r'],
             ['b', 'y', 'r']
         ])
+
         self.turn_history = []
+
+    @property
+    def A_corner(self):
+        return sorted(list(map(str, [self.topSide[0][0], self.leftSide[0][0], self.backSide[0][2]])))
+
+    @property
+    def B_corner(self):
+        return sorted(list(map(str, [self.topSide[0][2], self.backSide[0][0], self.rightSide[0][2]])))
+
+    @property
+    def C_corner(self):
+        return sorted(list(map(str, [self.topSide[2][2], self.frontSide[0][2], self.rightSide[0][0]])))
+
+    @property
+    def D_corner(self):
+        return sorted(list(map(str, [self.topSide[2][0], self.frontSide[0][0], self.leftSide[0][2]])))
+
+    @property
+    def U_corner(self):
+        return sorted(list(map(str, [self.bottomSide[0][0], self.frontSide[2][0], self.leftSide[2][2]])))
+
+    @property
+    def V_corner(self):
+        return sorted(list(map(str, [self.bottomSide[0][2], self.frontSide[2][2], self.rightSide[2][0]])))
+
+    @property
+    def W_corner(self):
+        return sorted(list(map(str, [self.bottomSide[2][2], self.backSide[2][0], self.rightSide[2][2]])))
+
+    @property
+    def X_corner(self):
+        return sorted(list(map(str, [self.backSide[2][0], self.backSide[2][2], self.leftSide[2][0]])))
 
     def turn(self, side):
         self.turn_history.append(side)
@@ -267,22 +300,26 @@ class RubiksCube:
             self.bottomSide[:, 1] = top_col
             self.backSide[:, 1] = front_col[::-1]
 
+    def matrix_updated(self):
+        """ Returns the current state of the cube as a dictionary of sides. """
+        return {
+            "top": self.topSide.copy(),
+            "left": self.leftSide.copy(),
+            "front": self.frontSide.copy(),
+            "right": self.rightSide.copy(),
+            "back": self.backSide.copy(),
+            "bottom": self.bottomSide.copy(),
+        }
 
     def corners_solve(self):
         X = 'b o y'.split()  # where the pieces should go
         W = 'b r y'.split()
         U = 'g o y'.split()
         V = 'g r y'.split()
-
-        A_corner = sorted(list(map(str, [self.topSide[0][0], self.leftSide[0][0], self.backSide[0][2]])))
-        B_corner = sorted(list(map(str, [self.topSide[0][2], self.backSide[0][0], self.rightSide[0][2]])))
-        C_corner = sorted(list(map(str, [self.topSide[2][2], self.frontSide[0][2], self.rightSide[0][0]])))
-        D_corner = sorted(list(map(str, [self.topSide[2][0], self.frontSide[0][0], self.leftSide[0][2]])))
-        U_corner = sorted(list(map(str, [self.bottomSide[0][0], self.frontSide[2][0], self.leftSide[2][2]])))
-        V_corner = sorted(list(map(str, [self.bottomSide[0][2], self.frontSide[2][2], self.rightSide[2][0]])))
-        W_corner = sorted(list(map(str, [self.bottomSide[2][2], self.backSide[2][0], self.rightSide[2][2]])))
-        X_corner = sorted(list(map(str, [self.backSide[2][0], self.backSide[2][2], self.leftSide[2][0]])))
-
+        A = 'b o w'.split()
+        B = 'b r w'.split()
+        C = 'g r w'.split()
+        D = 'g o w'.split()
 
         def remove_from_bottom(column):
             if column == 3:
@@ -302,119 +339,31 @@ class RubiksCube:
                 for move in moves:
                     self.turn(move)
 
-        #solve V
-        if self.bottomSide[0, 2]=='y' and self.frontSide[2, 2]=='g' and self.rightSide[2, 0]=='r':
-            None
-        elif X_corner == V:
-            remove_from_bottom(1)
-        elif W_corner == V:
-            remove_from_bottom(2)
-        elif U_corner == V:
-            remove_from_bottom(4)
-        elif V_corner == V:
-            while self.bottomSide[0, 2] != 'y' or self.frontSide[2, 2] != 'g' or self.rightSide[2, 0] != 'r':
-                self.turn('R')
-                self.turn('U')
-                self.turn('-R')
-                V_corner = sorted(list(map(str, [self.bottomSide[0][2], self.frontSide[2][2], self.rightSide[2][0]])))
-                if self.bottomSide[0, 2] != 'y' or self.frontSide[2, 2] != 'g' or self.rightSide[2, 0] != 'r':
-                    self.turn('-U')
+        def find_corner(corner_to_find):
+            all_corners = {
+                "A_corner": self.A_corner,
+                "B_corner": self.B_corner,
+                "C_corner": self.C_corner,
+                "D_corner": self.D_corner,
+                "U_corner": self.U_corner,
+                "V_corner": self.V_corner,
+                "W_corner": self.W_corner,
+                "X_corner": self.X_corner,
+            }
 
-        k = 1
-        C_corner = sorted(list(map(str, [self.topSide[2][2], self.frontSide[0][2], self.rightSide[0][0]])))
-        while C_corner != V and k<=4 and (self.bottomSide[0, 2] != 'y' or self.frontSide[2, 2] != 'g' or self.rightSide[2, 0] != 'r'):
-            self.turn('U')
-            A_corner = sorted(list(map(str, [self.topSide[0][0], self.leftSide[0][0], self.backSide[0][2]])))
-            B_corner = sorted(list(map(str, [self.topSide[0][2], self.backSide[0][0], self.rightSide[0][2]])))
-            C_corner = sorted(list(map(str, [self.topSide[2][2], self.frontSide[0][2], self.rightSide[0][0]])))
-            D_corner = sorted(list(map(str, [self.topSide[2][0], self.frontSide[0][0], self.leftSide[0][2]])))
-            k = k + 1
+            for name, corner in all_corners.items():
+                if sorted(corner) == sorted(corner_to_find):  # Compare sorted lists
+                    return print(name)  # Return the variable name as a string
 
-            while self.bottomSide[0, 2]!='y' or self.frontSide[2, 2]!='g' or self.rightSide[2, 0]!='r':
-                self.turn('R')
-                self.turn('U')
-                self.turn('-R')
-                V_corner = sorted(list(map(str, [self.bottomSide[0][2], self.frontSide[2][2], self.rightSide[2][0]])))
-                if self.bottomSide[0, 2]!='y' or self.frontSide[2, 2]!='g' or self.rightSide[2, 0]!='r':
-                    self.turn('-U')
-                A_corner = sorted(list(map(str, [self.topSide[0][0], self.leftSide[0][0], self.backSide[0][2]])))
-                B_corner = sorted(list(map(str, [self.topSide[0][2], self.backSide[0][0], self.rightSide[0][2]])))
-                C_corner = sorted(list(map(str, [self.topSide[2][2], self.frontSide[0][2], self.rightSide[0][0]])))
-                D_corner = sorted(list(map(str, [self.topSide[2][0], self.frontSide[0][0], self.leftSide[0][2]])))
-                U_corner = sorted(list(map(str, [self.bottomSide[0][0], self.frontSide[2][0], self.leftSide[2][2]])))
-                V_corner = sorted(list(map(str, [self.bottomSide[0][2], self.frontSide[2][2], self.rightSide[2][0]])))
-                W_corner = sorted(list(map(str, [self.bottomSide[2][2], self.backSide[2][0], self.rightSide[2][2]])))
-                X_corner = sorted(list(map(str, [self.backSide[2][0], self.backSide[2][2], self.leftSide[2][0]])))
-        A_corner = sorted(list(map(str, [self.topSide[0][0], self.leftSide[0][0], self.backSide[0][2]])))
-        B_corner = sorted(list(map(str, [self.topSide[0][2], self.backSide[0][0], self.rightSide[0][2]])))
-        C_corner = sorted(list(map(str, [self.topSide[2][2], self.frontSide[0][2], self.rightSide[0][0]])))
-        D_corner = sorted(list(map(str, [self.topSide[2][0], self.frontSide[0][0], self.leftSide[0][2]])))
-        U_corner = sorted(list(map(str, [self.bottomSide[0][0], self.frontSide[2][0], self.leftSide[2][2]])))
-        V_corner = sorted(list(map(str, [self.bottomSide[0][2], self.frontSide[2][2], self.rightSide[2][0]])))
-        W_corner = sorted(list(map(str, [self.bottomSide[2][2], self.backSide[2][0], self.rightSide[2][2]])))
-        X_corner = sorted(list(map(str, [self.backSide[2][0], self.backSide[2][2], self.leftSide[2][0]])))
-
-        #solve U
-        '''if self.bottomSide[0, 0]=='y' and self.frontSide[2, 0]=='g' and self.leftSide[2, 2]=='o':
-            return None
-        else:
-            if X_corner == U:
-                remove_from_bottom(1)
-            elif W_corner == U:
-                remove_from_bottom(2)
-            elif V_corner == U:
-                remove_from_bottom(3)
-            elif U_corner == U:
-                while self.bottomSide[0, 0]!='y' or self.frontSide[2, 0]!='g' or self.leftSide[2, 2]!='o':
-                    self.turn('-L')
-                    self.turn('-U')
-                    self.turn('L')
-                    U_corner = sorted(list(map(str, [self.bottomSide[0][2], self.frontSide[2][2], self.rightSide[2][0]])))
-                    if self.bottomSide[0, 0] != 'y' or self.frontSide[2, 0] != 'g' or self.leftSide[2, 2] != 'o':
-                        self.turn('U')
-
-            k = 1
-            D_corner = sorted(list(map(str, [self.topSide[2][0], self.frontSide[0][0], self.leftSide[0][2]])))
-            while D_corner != U and k <= 4 and (self.bottomSide[0, 0]!='y' or self.frontSide[2, 0]!='g' or self.leftSide[2, 2]!='o'):
-                self.turn('U')
-                A_corner = sorted(list(map(str, [self.topSide[0][0], self.leftSide[0][0], self.backSide[0][2]])))
-                B_corner = sorted(list(map(str, [self.topSide[0][2], self.backSide[0][0], self.rightSide[0][2]])))
-                C_corner = sorted(list(map(str, [self.topSide[2][2], self.frontSide[0][2], self.rightSide[0][0]])))
-                D_corner = sorted(list(map(str, [self.topSide[2][0], self.frontSide[0][0], self.leftSide[0][2]])))
-                k = k + 1
-
-                while self.bottomSide[0, 0] != 'y' or self.frontSide[2, 0] != 'g' or self.leftSide[2, 2] != 'o':
-                    self.turn('-L')
-                    self.turn('-U')
-                    self.turn('L')
-                    U_corner = sorted(list(map(str, [self.bottomSide[0][0], self.frontSide[2][0], self.leftSide[2][2]])))
-                    if self.bottomSide[0, 0] != 'y' or self.frontSide[2, 0] != 'g' or self.leftSide[2, 2] != 'o':
-                        self.turn('U')
-                    A_corner = sorted(list(map(str, [self.topSide[0][0], self.leftSide[0][0], self.backSide[0][2]])))
-                    B_corner = sorted(list(map(str, [self.topSide[0][2], self.backSide[0][0], self.rightSide[0][2]])))
-                    C_corner = sorted(list(map(str, [self.topSide[2][2], self.frontSide[0][2], self.rightSide[0][0]])))
-                    D_corner = sorted(list(map(str, [self.topSide[2][0], self.frontSide[0][0], self.leftSide[0][2]])))
-                    U_corner = sorted(list(map(str, [self.bottomSide[0][0], self.frontSide[2][0], self.leftSide[2][2]])))
-                    V_corner = sorted(list(map(str, [self.bottomSide[0][2], self.frontSide[2][2], self.rightSide[2][0]])))
-                    W_corner = sorted(list(map(str, [self.bottomSide[2][2], self.backSide[2][0], self.rightSide[2][2]])))
-                    X_corner = sorted(list(map(str, [self.backSide[2][0], self.backSide[2][2], self.leftSide[2][0]])))
-        A_corner = sorted(list(map(str, [self.topSide[0][0], self.leftSide[0][0], self.backSide[0][2]])))
-        B_corner = sorted(list(map(str, [self.topSide[0][2], self.backSide[0][0], self.rightSide[0][2]])))
-        C_corner = sorted(list(map(str, [self.topSide[2][2], self.frontSide[0][2], self.rightSide[0][0]])))
-        D_corner = sorted(list(map(str, [self.topSide[2][0], self.frontSide[0][0], self.leftSide[0][2]])))
-        U_corner = sorted(list(map(str, [self.bottomSide[0][0], self.frontSide[2][0], self.leftSide[2][2]])))
-        V_corner = sorted(list(map(str, [self.bottomSide[0][2], self.frontSide[2][2], self.rightSide[2][0]])))
-        W_corner = sorted(list(map(str, [self.bottomSide[2][2], self.backSide[2][0], self.rightSide[2][2]])))
-        X_corner = sorted(list(map(str, [self.backSide[2][0], self.backSide[2][2], self.leftSide[2][0]])))'''
-
-
-
+            return print('X_corner')  # If not found
+        find_corner(W)
 
 
 
 cube = RubiksCube()
+
 #moves = 'B L2 U2 F L2 B R U R2 -L B2 M2 R2 -D F2 -U F2 R2 -B D2 F2 L2 U F L U2'.split()
-moves = 'L2 U2'.split()
+moves = 'L U B R -U R2'.split()
 for move in moves:
     cube.turn(move)
 
@@ -448,23 +397,5 @@ def main():
     print(cube.turn_history)
 if __name__ == '__main__':
     main()
-
-
-'''A_corner = self.topSide[0, 0], self.leftSide[0, 0], self.backSide[0, 2]
-        A_corner = sorted(list(map(str, A_corner)))
-        B_corner = self.topSide[0, 2], self.backSide[0, 0], self.rightSide[0, 2]
-        B_corner = sorted(list(map(str, B_corner)))
-        C_corner = self.topSide[2, 2], self.frontSide[0, 2], self.rightSide[0, 0]
-        C_corner = sorted(list(map(str, C_corner)))
-        D_corner = self.topSide[2, 0], self.frontSide[0, 0], self.leftSide[0, 2]
-        D_corner = sorted(list(map(str, D_corner)))
-        U_corner = self.bottomSide[0, 0], self.frontSide[2, 0], self.leftSide[2, 2]
-        U_corner = sorted(list(map(str, U_corner)))
-        V_corner = self.bottomSide[0, 2], self.frontSide[2, 2], self.rightSide[2, 0]
-        V_corner = sorted(list(map(str, V_corner)))
-        W_corner = self.bottomSide[2, 2], self.backSide[2, 0], self.rightSide[2, 2]
-        W_corner = sorted(list(map(str, W_corner)))
-        X_corner = self.backSide[2, 0], self.backSide[2, 2], self.leftSide[2, 0]'''
-
 
 
