@@ -300,16 +300,25 @@ class RubiksCube:
             self.bottomSide[:, 1] = top_col
             self.backSide[:, 1] = front_col[::-1]
 
-    def matrix_updated(self):
-        """ Returns the current state of the cube as a dictionary of sides. """
-        return {
-            "top": self.topSide.copy(),
-            "left": self.leftSide.copy(),
-            "front": self.frontSide.copy(),
-            "right": self.rightSide.copy(),
-            "back": self.backSide.copy(),
-            "bottom": self.bottomSide.copy(),
-        }
+
+
+    @staticmethod
+    def simplify_moves(moves):
+        simplified_moves = []
+        i = 0
+        while i < len(moves):
+            if i < len(moves) - 1:
+                current, next_move = moves[i], moves[i+1]
+
+                if current == next_move:
+                    simplified_moves.append(current + '2')
+                    i += 2
+
+
+    move_set = 'U U U U'.split()
+    print(simplify_moves(move_set))
+
+
 
     def corners_solve(self):
         X = 'b o y'.split()  # where the pieces should go
@@ -360,12 +369,14 @@ class RubiksCube:
 
 
 
-cube = RubiksCube()
 
+
+
+
+cube = RubiksCube()
+cube.turn('')
 #moves = 'B L2 U2 F L2 B R U R2 -L B2 M2 R2 -D F2 -U F2 R2 -B D2 F2 L2 U F L U2'.split()
-moves = 'L U B R -U R2'.split()
-for move in moves:
-    cube.turn(move)
+
 
 cube.corners_solve()
 
