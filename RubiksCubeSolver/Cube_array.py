@@ -304,17 +304,30 @@ class RubiksCube:
 
     @staticmethod #Fix this
     def simplify_moves(moves):
-
-        simplified_moves = []
+        simplified_moves = list(moves.split())
+        print(list(moves.split()))
         i = 0
-        while i < len(moves.split())-1:
-            x = moves.split()[i]
-            y = moves.split()[i+1]
+
+        while i < len(simplified_moves)-1 and len(simplified_moves) != 1:
+            x = simplified_moves[i]
+            try:
+                if x[1] == '2':
+                    x_turn = x[0]
+                else:
+                    x_turn = x[1]
+            except IndexError:
+                x_turn = x[0]
+            y = simplified_moves[i+1]
+            try:
+                if y[1] == '2':
+                    y_turn = y[0]
+                else:
+                    y_turn = y[1]
+            except IndexError:
+                y_turn = y[0]
 
             #Check if x & y turn the same side
-            set_x = set(x) - {'-', '2'}
-            set_y = set(y) - {'-', '2'}
-            if set_x == set_y:
+            if x_turn == y_turn:
                 try:
                     if x[1] == '2':
                         quantifier_x = 2
@@ -334,20 +347,24 @@ class RubiksCube:
 
                 turn_quantifier = quantifier_x + quantifier_y
                 if turn_quantifier in {0, 4}:
-                    i += 1
+                    simplified_moves[i:i+2] = []
                 elif turn_quantifier == 1:
-                    simplified_moves.append(str(set_x)[2])
+                    simplified_moves[i:i+2] = [x_turn]
                 elif turn_quantifier in {-2, 2}:
-                    simplified_moves.append(str(set_x)[2] + '2')
+                    simplified_moves[i:i+2] = [x_turn + '2']
                 elif turn_quantifier == 3:
-                    simplified_moves.append(str(set_x)[2] + "'")
+                    simplified_moves[i:i+2] = [x_turn + "'"]
 
             else:
-                simplified_moves.append(moves[i])
-                simplified_moves.append(moves[i+1])
+                i += 1
+            print(simplified_moves)
+            try:
+                test = simplified_moves[i+1]
+            except IndexError:
+                break
 
 
-            i += 1
+
 
 
 
@@ -422,7 +439,7 @@ cube.turn('')
 
 
 cube.corners_solve()
-cube.simplify_moves('U2 -U')
+cube.simplify_moves('R R R R R R R R R R R R')
 
 def cube_state():
     print("         [" + " ".join(cube.topSide[0, :]) + "]")
