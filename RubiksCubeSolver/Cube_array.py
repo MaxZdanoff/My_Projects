@@ -305,7 +305,7 @@ class RubiksCube:
     @staticmethod #Fix this
     def simplify_moves(moves):
         simplified_moves = list(moves.split())
-        print(list(moves.split()))
+        #print(list(moves.split()))
         i = 0
 
         while i < len(simplified_moves) - 1 and len(simplified_moves) != 1:
@@ -356,7 +356,7 @@ class RubiksCube:
 
             else:
                 i += 1
-            print(simplified_moves)
+            #print(simplified_moves)
             if i >= len(simplified_moves)-1:
                 break
 
@@ -364,6 +364,9 @@ class RubiksCube:
         for move in range(len(simplified_moves)-1):
             if simplified_moves[move] == simplified_moves[move+1]:
                 return RubiksCube.simplify_moves(' '.join(simplified_moves))
+
+        return simplified_moves
+
 
 
 
@@ -424,12 +427,11 @@ class RubiksCube:
 
 
 cube = RubiksCube()
-cube.turn('')
+
 #moves = 'B L2 U2 F L2 B R U R2 -L B2 M2 R2 -D F2 -U F2 R2 -B D2 F2 L2 U F L U2'.split()
 
 
-cube.corners_solve()
-cube.simplify_moves('D U D -D U R U R R2')
+
 
 def cube_state():
     print("         [" + " ".join(cube.topSide[0, :]) + "]")
@@ -447,6 +449,9 @@ def cube_state():
     print("         [" + " ".join(cube.bottomSide[2, :]) + "]")
 
 def main():
+
+    cube.corners_solve()
+    print(cube.simplify_moves('R2 D2 R2 R2 D2 R2 D2 D2 R2'))
     moves = ''.split()
     for move in moves:
         cube.turn(move)
