@@ -308,7 +308,7 @@ class RubiksCube:
         print(list(moves.split()))
         i = 0
 
-        while i < len(simplified_moves)-1 and len(simplified_moves) != 1:
+        while i < len(simplified_moves) - 1 and len(simplified_moves) != 1:
             x = simplified_moves[i]
             try:
                 if x[1] == '2':
@@ -317,7 +317,7 @@ class RubiksCube:
                     x_turn = x[1]
             except IndexError:
                 x_turn = x[0]
-            y = simplified_moves[i+1]
+            y = simplified_moves[i + 1]
             try:
                 if y[1] == '2':
                     y_turn = y[0]
@@ -326,7 +326,7 @@ class RubiksCube:
             except IndexError:
                 y_turn = y[0]
 
-            #Check if x & y turn the same side
+            # Check if x & y turn the same side
             if x_turn == y_turn:
                 try:
                     if x[1] == '2':
@@ -344,36 +344,26 @@ class RubiksCube:
                 except IndexError:
                     quantifier_y = 1
 
-
                 turn_quantifier = quantifier_x + quantifier_y
                 if turn_quantifier in {0, 4}:
-                    simplified_moves[i:i+2] = []
+                    simplified_moves[i:i + 2] = []
                 elif turn_quantifier == 1:
-                    simplified_moves[i:i+2] = [x_turn]
+                    simplified_moves[i:i + 2] = [x_turn]
                 elif turn_quantifier in {-2, 2}:
-                    simplified_moves[i:i+2] = [x_turn + '2']
+                    simplified_moves[i:i + 2] = [x_turn + '2']
                 elif turn_quantifier == 3:
-                    simplified_moves[i:i+2] = [x_turn + "'"]
+                    simplified_moves[i:i + 2] = ['-' + x_turn]
 
             else:
                 i += 1
             print(simplified_moves)
-            try:
-                test = simplified_moves[i+1]
-            except IndexError:
+            if i >= len(simplified_moves)-1:
                 break
 
-
-
-
-
-
-
-
-
-
-
-
+        #Check if fully simplified
+        for move in range(len(simplified_moves)-1):
+            if simplified_moves[move] == simplified_moves[move+1]:
+                return RubiksCube.simplify_moves(' '.join(simplified_moves))
 
 
 
@@ -439,7 +429,7 @@ cube.turn('')
 
 
 cube.corners_solve()
-cube.simplify_moves('R R R R R R R R R R R R')
+cube.simplify_moves('D U D -D U R U R R2')
 
 def cube_state():
     print("         [" + " ".join(cube.topSide[0, :]) + "]")
