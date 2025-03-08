@@ -3,34 +3,34 @@ import numpy as np
 class RubiksCube:
     def __init__(self):
         self.topSide = np.array([
-            ['b', 'r', 'r'],
-            ['o', 'w', 'b'],
-            ['b', 'o', 'w']
+            ['w', 'w', 'g'],
+            ['w', 'w', 'g'],
+            ['b', 'b', 'w']
         ])
         self.leftSide = np.array([
-            ['w', 'w', 'r'],
-            ['r', 'o', 'y'],
-            ['y', 'w', 'o']
+            ['b', 'o', 'o'],
+            ['o', 'o', 'o'],
+            ['o', 'o', 'o']
        ])
         self.frontSide = np.array([
-            ['y', 'g', 'o'],
-            ['g', 'g', 'y'],
-            ['g', 'w', 'r']
+            ['w', 'w', 'g'],
+            ['g', 'g', 'g'],
+            ['g', 'g', 'g']
         ])
         self.rightSide = np.array([
-            ['g', 'o', 'g'],
-            ['r', 'r', 'y'],
-            ['g', 'g', 'w']
+            ['r', 'w', 'w'],
+            ['r', 'r', 'r'],
+            ['r', 'r', 'r']
        ])
         self.backSide = np.array([
-            ['y', 'b', 'o'],
-            ['b', 'b', 'w'],
-            ['b', 'o', 'o']
+            ['o', 'r', 'r'],
+            ['b', 'b', 'b'],
+            ['b', 'b', 'b']
         ])
         self.bottomSide = np.array([
-            ['y', 'b', 'w'],
-            ['g', 'y', 'r'],
-            ['b', 'y', 'r']
+            ['y', 'y', 'y'],
+            ['y', 'y', 'y'],
+            ['y', 'y', 'y']
         ])
 
         self.turn_history = []
@@ -302,21 +302,64 @@ class RubiksCube:
 
 
 
-    @staticmethod
+    @staticmethod #Fix this
     def simplify_moves(moves):
+
         simplified_moves = []
         i = 0
-        while i < len(moves):
-            if i < len(moves) - 1:
-                current, next_move = moves[i], moves[i+1]
+        while i < len(moves.split())-1:
+            x = moves.split()[i]
+            y = moves.split()[i+1]
 
-                if current == next_move:
-                    simplified_moves.append(current + '2')
-                    i += 2
+            #Check if x & y turn the same side
+            set_x = set(x) - {'-', '2'}
+            set_y = set(y) - {'-', '2'}
+            if set_x == set_y:
+                try:
+                    if x[1] == '2':
+                        quantifier_x = 2
+                    else:
+                        quantifier_x = -1
+                except IndexError:
+                    quantifier_x = 1
+
+                try:
+                    if y[1] == '2':
+                        quantifier_y = 2
+                    else:
+                        quantifier_y = -1
+                except IndexError:
+                    quantifier_y = 1
 
 
-    move_set = 'U U U U'.split()
-    print(simplify_moves(move_set))
+                turn_quantifier = quantifier_x + quantifier_y
+                if turn_quantifier in {0, 4}:
+                    i += 1
+                elif turn_quantifier == 1:
+                    simplified_moves.append(str(set_x)[2])
+                elif turn_quantifier in {-2, 2}:
+                    simplified_moves.append(str(set_x)[2] + '2')
+                elif turn_quantifier == 3:
+                    simplified_moves.append(str(set_x)[2] + "'")
+
+            else:
+                simplified_moves.append(moves[i])
+                simplified_moves.append(moves[i+1])
+
+
+            i += 1
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -361,10 +404,10 @@ class RubiksCube:
             }
 
             for name, corner in all_corners.items():
-                if sorted(corner) == sorted(corner_to_find):  # Compare sorted lists
-                    return print(name)  # Return the variable name as a string
+                if sorted(corner) == sorted(corner_to_find):
+                    return print(name)
 
-            return print('X_corner')  # If not found
+            return print('X_corner')
         find_corner(W)
 
 
@@ -379,7 +422,7 @@ cube.turn('')
 
 
 cube.corners_solve()
-
+cube.simplify_moves('U2 -U')
 
 def cube_state():
     print("         [" + " ".join(cube.topSide[0, :]) + "]")
@@ -406,6 +449,10 @@ def main():
     print(cube_state())
     print("L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' D2 R F' R2 D L2")
     print(cube.turn_history)
+
+    #Simplify moves
+
+
 if __name__ == '__main__':
     main()
 
