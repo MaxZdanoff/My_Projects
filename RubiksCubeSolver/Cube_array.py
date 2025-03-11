@@ -1,36 +1,36 @@
 import numpy as np
-#Current scramble for cube with green as front and white as top: L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' D2 R F' R2 D L2
+#Current scramble for cube with green as front and white as top
 class RubiksCube:
     def __init__(self):
         self.topSide = np.array([
-            ['w', 'w', 'g'],
-            ['w', 'w', 'g'],
-            ['b', 'b', 'w']
+            ['r', 'w', 'o'],
+            ['g', 'w', 'b'],
+            ['r', 'r', 'y']
         ])
         self.leftSide = np.array([
-            ['b', 'o', 'o'],
-            ['o', 'o', 'o'],
-            ['o', 'o', 'o']
+            ['y', 'w', 'w'],
+            ['r', 'o', 'r'],
+            ['b', 'o', 'o']
        ])
         self.frontSide = np.array([
-            ['w', 'w', 'g'],
+            ['g', 'w', 'o'],
             ['g', 'g', 'g'],
-            ['g', 'g', 'g']
+            ['w', 'g', 'g']
         ])
         self.rightSide = np.array([
-            ['r', 'w', 'w'],
-            ['r', 'r', 'r'],
-            ['r', 'r', 'r']
+            ['b', 'o', 'w'],
+            ['o', 'r', 'o'],
+            ['y', 'r', 'b']
        ])
         self.backSide = np.array([
-            ['o', 'r', 'r'],
-            ['b', 'b', 'b'],
-            ['b', 'b', 'b']
+            ['b', 'b', 'g'],
+            ['w', 'b', 'b'],
+            ['r', 'b', 'r']
         ])
         self.bottomSide = np.array([
+            ['g', 'y', 'o'],
             ['y', 'y', 'y'],
-            ['y', 'y', 'y'],
-            ['y', 'y', 'y']
+            ['y', 'y', 'w']
         ])
 
         self.turn_history = []
@@ -302,9 +302,14 @@ class RubiksCube:
 
 
 
-    @staticmethod #Fix this
+    @staticmethod
     def simplify_moves(moves):
         simplified_moves = list(moves.split())
+
+
+        #Sexy move
+
+
         #print(list(moves.split()))
         i = 0
 
@@ -373,7 +378,7 @@ class RubiksCube:
 
 
 
-    def corners_solve(self):
+    def corners_info(self):
         X = 'b o y'.split()  # where the pieces should go
         W = 'b r y'.split()
         U = 'g o y'.split()
@@ -418,7 +423,15 @@ class RubiksCube:
                     return print(name)
 
             return print('X_corner')
+
+
+        def corner_details(corner):
+            ''
         find_corner(W)
+
+
+
+
 
 
 
@@ -450,21 +463,23 @@ def cube_state():
 
 def main():
 
-    cube.corners_solve()
-    print(cube.simplify_moves('R2 D2 R2 R2 D2 R2 D2 D2 R2'))
+    cube.corners_info()
+
+
+
+
+
+
+
+
     moves = ''.split()
     for move in moves:
         cube.turn(move)
 
-    # L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' D2 R F' R2 D L2
-    # L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' D2 R F' R2 D L2
     print(cube_state())
-    print("L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' D2 R F' R2 D L2")
+    print("L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' R2 D2 R B D2") # Cross solved
     print(cube.turn_history)
-
-    #Simplify moves
-
-
+    # L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' D2 R F' R2 D L2 (Original)
 if __name__ == '__main__':
     main()
 
