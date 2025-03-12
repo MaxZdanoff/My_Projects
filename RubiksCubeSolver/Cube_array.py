@@ -517,21 +517,17 @@ class RubiksCube:
 
         def remove_from_bottom(column):
             if column == 'V_corner':
-                moves = 'R U -R'.split()
-                for move in moves:
-                    self.turn(move)
+                moves = 'R U -R'
+                return moves
             elif column == 'U_corner':
-                moves = '-L -U L'.split()
-                for move in moves:
-                    self.turn(move)
+                moves = '-L -U L'
+                return moves
             elif column == 'X_corner':
-                moves = 'L U -L'.split()
-                for move in moves:
-                    self.turn(move)
+                moves = 'L U -L'
+                return moves
             elif column == 'W_corner':
-                moves = '-R -U R'.split()
-                for move in moves:
-                    self.turn(move)
+                moves = '-R -U R'
+                return moves
 
         def find_corner(corner_to_find):
             all_corners = {
@@ -556,10 +552,8 @@ class RubiksCube:
         def X_corner_solve():
             corner_solve_alg = []
 
-            case_1 = 'R U2 -R U2 -F U F'.split() #Yellow on top
-            #case_1_left (save for left corners) = '-L U2 L U2 F -U -F'.split() #Yellow on top
-            case_2 = 'U R -U -R'.split() #Yellow on side
-            #case_2_left = '-U -L U L'.split() #Yellow on side
+            case_1 = 'R U2 -R U2 -F U F'.split()
+            case_2 = 'U R -U -R'.split()
             case_3 = '-U -F U F'.split()
 
             if is_corner_solved(X): #Check if the corner is solved
@@ -567,8 +561,10 @@ class RubiksCube:
 
             location = find_corner(X)
             if location in {'U_corner', 'V_corner', 'W_corner', 'X_corner'}: #Check if corner is at the bottom
-                remove_from_bottom(location) #Remove from bottom if true
-
+                moves = remove_from_bottom(location)  # Remove from bottom if true
+                for move in moves.split():
+                    self.turn(move)
+                corner_solve_alg.append(' '.join(moves.split()))
 
             turns = '' #Empty substring of U moves
             while find_corner(X) != 'A_corner':
@@ -577,37 +573,124 @@ class RubiksCube:
 
             corner_solve_alg.append(' '.join(self.simplify_moves(turns.strip()))) #Simplify moves before adding to main move list
 
-                #TRY CASE_1
-            for move in self.rotate_moves(case_1, 'back'):
-                self.turn(move)
-            if is_corner_solved(X):
-                corner_solve_alg.append(' '.join(self.rotate_moves(case_1, 'back'))) #If solved append moves to list
-                return print(self.simplify_moves(' '.join(corner_solve_alg))) #Print for debugging
-            else:
-                for move in self.undo_moves(self.rotate_moves(case_1, 'back')): #If not solved undo moves
+            cases = [case_1, case_2, case_3]
+            for case in cases:
+                    #Try all cases
+                for move in self.rotate_moves(case, 'back'):
                     self.turn(move)
+                if is_corner_solved(X):
+                    corner_solve_alg.append(' '.join(self.rotate_moves(case, 'back'))) #If solved append moves to list
+                    return print(self.simplify_moves(' '.join(corner_solve_alg))) #Print for debugging
+                else:
+                    for move in self.undo_moves(self.rotate_moves(case, 'back')): #If not solved undo moves
+                        self.turn(move)
 
-                #TRY CASE_2
-            for move in self.rotate_moves(case_2, 'back'):
-                self.turn(move)
-            if is_corner_solved(X):
-                corner_solve_alg.append(' '.join(self.rotate_moves(case_2, 'back')))
-                return print(self.simplify_moves(' '.join(corner_solve_alg))) #Print for debugging
-            else:
-                for move in self.undo_moves(self.rotate_moves(case_2, 'back')):
+
+        def U_corner_solve():
+            corner_solve_alg = []
+            case_1 = '-L U2 L U2 F -U -F'.split()
+            case_2 = '-U -L U L'.split()
+            case_3 = 'U F -U -F'.split()
+
+            if is_corner_solved(U):  # Check if the corner is solved
+                return
+
+            location = find_corner(U)
+            if location in {'U_corner', 'V_corner', 'W_corner', 'X_corner'}:  # Check if corner is at the bottom
+                moves = remove_from_bottom(location)  # Remove from bottom if true
+                for move in moves.split():
                     self.turn(move)
+                corner_solve_alg.append(' '.join(moves.split()))
 
-                #TRY CASE_3
-            for move in self.rotate_moves(case_3, 'back'):
-                self.turn(move)
-            if is_corner_solved(X):
-                corner_solve_alg.append(' '.join(self.rotate_moves(case_3, 'back')))
-                return print(self.simplify_moves(' '.join(corner_solve_alg))) #Print for debugging
-            else:
-                for move in self.undo_moves(self.rotate_moves(case_3, 'back')):
+            turns = ''  # Empty substring of U moves
+            while find_corner(U) != 'D_corner':
+                self.turn('U')
+                turns += ' U'  # Add to substring
+
+            corner_solve_alg.append(' '.join(self.simplify_moves(turns.strip())))  # Simplify moves before adding to main move list
+
+            cases = [case_1, case_2, case_3]
+            for case in cases:
+                # Try all cases
+                for move in case:
                     self.turn(move)
+                if is_corner_solved(U):
+                    corner_solve_alg.append(' '.join(case))  # If solved append moves to list
+                    return print(self.simplify_moves(' '.join(corner_solve_alg)))  # Print for debugging
+                else:
+                    for move in self.undo_moves(case):  # If not solved undo moves
+                        self.turn(move)
+
+        def V_corner_solve():
+            corner_solve_alg = []
+            case_1 = 'R U2 -R U2 -F U F'.split()
+            case_2 = 'U R -U -R'.split()
+            case_3 = '-U -F U F'.split()
+
+            if is_corner_solved(V):  # Check if the corner is solved
+                return
+
+            location = find_corner(V)
+            if location in {'U_corner', 'V_corner', 'W_corner', 'X_corner'}:  # Check if corner is at the bottom
+                moves = remove_from_bottom(location)  # Remove from bottom if true
+                for move in moves.split():
+                    self.turn(move)
+                corner_solve_alg.append(' '.join(moves.split()))
+
+            turns = ''  # Empty substring of U moves
+            while find_corner(V) != 'C_corner':
+                self.turn('U')
+                turns += ' U'  # Add to substring
+
+            corner_solve_alg.append(' '.join(self.simplify_moves(turns.strip())))  # Simplify moves before adding to main move list
+
+            cases = [case_1, case_2, case_3]
+            for case in cases:
+                # Try all cases
+                for move in case:
+                    self.turn(move)
+                if is_corner_solved(V):
+                    corner_solve_alg.append(' '.join(case))  # If solved append moves to list
+                    return print(self.simplify_moves(' '.join(corner_solve_alg)))  # Print for debugging
+                else:
+                    for move in self.undo_moves(case):  # If not solved undo moves
+                        self.turn(move)
 
 
+        def W_corner_solve():
+            corner_solve_alg = []
+            case_1 = '-L U2 L U2 F -U -F'.split()
+            case_2 = '-U -L U L'.split()
+            case_3 = 'U F -U -F'.split()
+
+            if is_corner_solved(W):  # Check if the corner is solved
+                return
+
+            location = find_corner(W)
+            if location in {'U_corner', 'V_corner', 'W_corner', 'X_corner'}:  # Check if corner is at the bottom
+                moves = remove_from_bottom(location)  # Remove from bottom if true
+                for move in moves.split():
+                    self.turn(move)
+                corner_solve_alg.append(' '.join(moves.split()))
+
+            turns = ''  # Empty substring of U moves
+            while find_corner(W) != 'B_corner':
+                self.turn('U')
+                turns += ' U'  # Add to substring
+
+            corner_solve_alg.append(' '.join(self.simplify_moves(turns.strip())))  # Simplify moves before adding to main move list
+
+            cases = [case_1, case_2, case_3]
+            for case in cases:
+                # Try all cases
+                for move in self.rotate_moves(case, 'back'):
+                    self.turn(move)
+                if is_corner_solved(W):
+                    corner_solve_alg.append(' '.join(self.rotate_moves(case, 'back')))  # If solved append moves to list
+                    return print(self.simplify_moves(' '.join(corner_solve_alg)))  # Print for debugging
+                else:
+                    for move in self.undo_moves(self.rotate_moves(case, 'back')):  # If not solved undo moves
+                        self.turn(move)
 
 
 
@@ -632,7 +715,7 @@ class RubiksCube:
 
 
 
-        X_corner_solve()
+        W_corner_solve()
 
 
    # def display_moves(self):
