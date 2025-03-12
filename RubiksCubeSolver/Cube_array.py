@@ -517,15 +517,27 @@ class RubiksCube:
 
         def remove_from_bottom(column):
             if column == 'V_corner':
+                if self.frontSide[2][2] == 'y':
+                    moves = 'R -U -R'
+                    return moves
                 moves = 'R U -R'
                 return moves
             elif column == 'U_corner':
+                if self.frontSide[2][0] == 'y':
+                    moves = '-L U L'
+                    return moves
                 moves = '-L -U L'
                 return moves
             elif column == 'X_corner':
+                if self.backSide[2][2] == 'y':
+                    moves = 'L -U -L'
+                    return moves
                 moves = 'L U -L'
                 return moves
             elif column == 'W_corner':
+                if self.backSide[2][0] == 'y':
+                    moves = '-R U R'
+                    return moves
                 moves = '-R -U R'
                 return moves
 
@@ -580,7 +592,7 @@ class RubiksCube:
                     self.turn(move)
                 if is_corner_solved(X):
                     corner_solve_alg.append(' '.join(self.rotate_moves(case, 'back'))) #If solved append moves to list
-                    return print(self.simplify_moves(' '.join(corner_solve_alg))) #Print for debugging
+                    return print(f"X_corner: {self.simplify_moves(' '.join(corner_solve_alg))}") #Print for debugging
                 else:
                     for move in self.undo_moves(self.rotate_moves(case, 'back')): #If not solved undo moves
                         self.turn(move)
@@ -616,7 +628,7 @@ class RubiksCube:
                     self.turn(move)
                 if is_corner_solved(U):
                     corner_solve_alg.append(' '.join(case))  # If solved append moves to list
-                    return print(self.simplify_moves(' '.join(corner_solve_alg)))  # Print for debugging
+                    return print(f"U_corner: {self.simplify_moves(' '.join(corner_solve_alg))}")  # Print for debugging
                 else:
                     for move in self.undo_moves(case):  # If not solved undo moves
                         self.turn(move)
@@ -651,7 +663,7 @@ class RubiksCube:
                     self.turn(move)
                 if is_corner_solved(V):
                     corner_solve_alg.append(' '.join(case))  # If solved append moves to list
-                    return print(self.simplify_moves(' '.join(corner_solve_alg)))  # Print for debugging
+                    return print(f"V_corner: {self.simplify_moves(' '.join(corner_solve_alg))}")  # Print for debugging
                 else:
                     for move in self.undo_moves(case):  # If not solved undo moves
                         self.turn(move)
@@ -687,39 +699,16 @@ class RubiksCube:
                     self.turn(move)
                 if is_corner_solved(W):
                     corner_solve_alg.append(' '.join(self.rotate_moves(case, 'back')))  # If solved append moves to list
-                    return print(self.simplify_moves(' '.join(corner_solve_alg)))  # Print for debugging
+                    return print(f"W_corner: {self.simplify_moves(' '.join(corner_solve_alg))}")  # Print for debugging
                 else:
                     for move in self.undo_moves(self.rotate_moves(case, 'back')):  # If not solved undo moves
                         self.turn(move)
 
 
-
-
-
-
-
-
-
-
-
-                '''Possibly get rid of reverse_moves and instead manually create reversed moves. Also consider returning custom moves list.'''
-
-
-
-
-
-
-
-
-
-
-
-
+        X_corner_solve()
+        U_corner_solve()
+        V_corner_solve()
         W_corner_solve()
-
-
-   # def display_moves(self):
-        #print(self.simplify_moves(' '.join(self.turn_history)))
 
 
 
