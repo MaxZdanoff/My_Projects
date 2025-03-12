@@ -1,3 +1,4 @@
+
 import numpy as np
 #Current scramble for cube with green as front and white as top
 class RubiksCube:
@@ -373,10 +374,32 @@ class RubiksCube:
         return simplified_moves
 
 
+    @staticmethod
+    def rotate_moves(moves, side):
+        for move in range(len(moves.split())):
+            if side == 'left':
+                moves = moves.replace('R', 'F') \
+                             .replace('-R', '-F') \
+                             .replace('R2', 'F2') \
+                             .replace('L', 'B') \
+                             .replace('-L', '-B') \
+                             .replace('L2', 'B2')
+            if side == 'right':
+                moves = moves.replace('R', 'B') \
+                             .replace('-R', '-B') \
+                             .replace('R2', 'B2') \
+                             .replace('L', 'F') \
+                             .replace('-L', '-F') \
+                             .replace('L2', 'F2')
+            if side == 'back':
+                moves = moves.replace('R', 'L') \
+                             .replace('-R', '-L') \
+                             .replace('R2', 'L2') \
+                             .replace('L', 'R') \
+                             .replace('-L', '-R') \
+                             .replace('L2', 'R2')
 
-
-
-
+        return moves
 
     def corners_info(self):
         X = 'b o y'.split()  # where the pieces should go
@@ -389,19 +412,19 @@ class RubiksCube:
         D = 'g o w'.split()
 
         def remove_from_bottom(column):
-            if column == 3:
+            if column == 'V_corner':
                 moves = 'R U -R'.split()
                 for move in moves:
                     self.turn(move)
-            elif column == 4:
+            elif column == 'U_corner':
                 moves = '-L -U L'.split()
                 for move in moves:
                     self.turn(move)
-            elif column == 1:
+            elif column == 'X_corner':
                 moves = 'L U -L'.split()
                 for move in moves:
                     self.turn(move)
-            elif column == 2:
+            elif column == 'W_corner':
                 moves = '-R -U R'.split()
                 for move in moves:
                     self.turn(move)
@@ -418,20 +441,35 @@ class RubiksCube:
                 "X_corner": self.X_corner,
             }
 
+            # Find and return the corner name
             for name, corner in all_corners.items():
                 if sorted(corner) == sorted(corner_to_find):
-                    return print(name)
+                    return name
 
-            return print('X_corner')
-
-
-        def corner_details(corner):
-            ''
-        find_corner(W)
+            return 'X_corner'
 
 
+        def corner_info(corner):
+            if corner == A:
+                '''Finish writing this'''
+                '''Finish writing this'''
+                '''Finish writing this'''
+                '''Finish writing this'''
+                '''Finish writing this'''
 
+        def corner_solve(corner):
+            location = find_corner(corner)
+            if location in {'U_corner', 'V_corner', 'W_corner', 'X_corner'}:
+                remove_from_bottom(location)
+                location = find_corner(corner)
 
+            '''Finish writing this'''
+            '''Finish writing this'''
+            '''Finish writing this'''
+            '''Finish writing this'''
+            '''Finish writing this'''
+
+        corner_solve(W)
 
 
 
@@ -440,6 +478,10 @@ class RubiksCube:
 
 
 cube = RubiksCube()
+
+
+
+
 
 #moves = 'B L2 U2 F L2 B R U R2 -L B2 M2 R2 -D F2 -U F2 R2 -B D2 F2 L2 U F L U2'.split()
 
@@ -472,6 +514,7 @@ def main():
 
 
 
+
     moves = ''.split()
     for move in moves:
         cube.turn(move)
@@ -482,5 +525,3 @@ def main():
     # L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' D2 R F' R2 D L2 (Original)
 if __name__ == '__main__':
     main()
-
-
