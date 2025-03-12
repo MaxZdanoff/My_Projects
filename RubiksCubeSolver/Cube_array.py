@@ -508,18 +508,18 @@ class RubiksCube:
 
 
             if corner == X:
+                turns = []
                 while find_corner(X) != 'A_corner':
-                   self.turn('U')
-                #if
+                    self.turn('U')
+                    turns.append('U')
+
+                '''Possibly get rid of reverse_moves and instead manually create reversed moves. Also consider returning custom moves list.'''
 
 
 
 
-                '''Finish writing this'''
-                '''Finish writing this'''
-                '''Finish writing this'''
-                '''Finish writing this'''
-                '''Finish writing this'''
+
+
 
 
 
@@ -529,8 +529,8 @@ class RubiksCube:
         corner_solve(X)
 
 
-    def display_moves(self):
-        print(self.simplify_moves(' '.join(self.turn_history)))
+   # def display_moves(self):
+        #print(self.simplify_moves(' '.join(self.turn_history)))
 
 
 
@@ -571,14 +571,16 @@ def main():
 
 
 
-    moves = ''.split()
+    '''moves = ''.split()
     for move in moves:
-        cube.turn(move)
+        cube.turn(move)'''
 
     print(cube_state())
     print("L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' R2 D2 R B D2") # Cross solved
     print(cube.turn_history)
-    print(cube.display_moves())
+
+
+
     # L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' D2 R F' R2 D L2 (Original)
 if __name__ == '__main__':
     main()
