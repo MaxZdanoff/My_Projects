@@ -301,17 +301,13 @@ class RubiksCube:
             self.bottomSide[:, 1] = top_col
             self.backSide[:, 1] = front_col[::-1]
 
-
-
     @staticmethod
     def simplify_moves(moves):
         simplified_moves = list(moves.split())
 
+        # Sexy move
 
-        #Sexy move
-
-
-        #print(list(moves.split()))
+        # print(list(moves.split()))
         i = 0
 
         while i < len(simplified_moves) - 1 and len(simplified_moves) != 1:
@@ -362,44 +358,95 @@ class RubiksCube:
 
             else:
                 i += 1
-            #print(simplified_moves)
-            if i >= len(simplified_moves)-1:
+            # print(simplified_moves)
+            if i >= len(simplified_moves) - 1:
                 break
 
-        #Check if fully simplified
-        for move in range(len(simplified_moves)-1):
-            if simplified_moves[move] == simplified_moves[move+1]:
+        # Check if fully simplified
+        for move in range(len(simplified_moves) - 1):
+            if simplified_moves[move] == simplified_moves[move + 1] or simplified_moves[move] == simplified_moves[move + 1] + '2':
                 return RubiksCube.simplify_moves(' '.join(simplified_moves))
-
+            elif simplified_moves[move] == ('-' + simplified_moves[move+1]):
+                return RubiksCube.simplify_moves(' '.join(simplified_moves))
+            elif '-' + simplified_moves[move] == simplified_moves[move+1]:
+                return RubiksCube.simplify_moves(' '.join(simplified_moves))
+            elif simplified_moves[move] == simplified_moves[move+1] + '2':
+                return RubiksCube.simplify_moves(' '.join(simplified_moves))
+            elif simplified_moves[move] + '2' == simplified_moves[move+1]:
+                return RubiksCube.simplify_moves(' '.join(simplified_moves))
         return simplified_moves
-
 
     @staticmethod
     def rotate_moves(moves, side):
-        for move in range(len(moves.split())):
+        moves_list = moves.split()
+        back_moves = []
+        for i in range(len(moves_list)):
+            move = moves_list[i]
             if side == 'left':
-                moves = moves.replace('R', 'F') \
-                             .replace('-R', '-F') \
-                             .replace('R2', 'F2') \
-                             .replace('L', 'B') \
-                             .replace('-L', '-B') \
-                             .replace('L2', 'B2')
-            if side == 'right':
-                moves = moves.replace('R', 'B') \
-                             .replace('-R', '-B') \
-                             .replace('R2', 'B2') \
-                             .replace('L', 'F') \
-                             .replace('-L', '-F') \
-                             .replace('L2', 'F2')
-            if side == 'back':
-                moves = moves.replace('R', 'L') \
-                             .replace('-R', '-L') \
-                             .replace('R2', 'L2') \
-                             .replace('L', 'R') \
-                             .replace('-L', '-R') \
-                             .replace('L2', 'R2')
+                moves_list[i] = move.replace('R', 'F') \
+                    .replace('-R', '-F') \
+                    .replace('R2', 'F2') \
+                    .replace('L', 'B') \
+                    .replace('-L', '-B') \
+                    .replace('L2', 'B2')
+            elif side == 'right':
+                moves_list[i] = move.replace('R', 'B') \
+                    .replace('-R', '-B') \
+                    .replace('R2', 'B2') \
+                    .replace('L', 'F') \
+                    .replace('-L', '-F') \
+                    .replace('L2', 'F2')
+            elif side == 'back':
+                if moves_list[i] == 'R':
+                    back_moves.append('L')
+                elif moves_list[i] == '-R':
+                    back_moves.append('-L')
+                elif moves_list[i] == 'R2':
+                    back_moves.append('L2')
+                elif moves_list[i] == 'L':
+                    back_moves.append('R')
+                elif moves_list[i] == '-L':
+                    back_moves.append('-R')
+                elif moves_list[i] == 'L2':
+                    back_moves.append('R2')
+                elif moves_list[i] in {'U', '-U', 'U2'}:
+                    back_moves.append(moves_list[i])
 
-        return moves
+        if side == 'back':
+            return ' '.join(back_moves)
+        return ' '.join(moves_list)
+
+
+    @staticmethod
+    def undo_moves(moves):
+        reversed_moves = []
+        i = len(moves.split())-1
+        while i >= 0:
+            if moves.split()[i] == 'R':
+                reversed_moves.append('-R')
+            elif moves.split()[i] == '-R':
+                reversed_moves.append('R')
+            elif moves.split()[i] == 'L':
+                reversed_moves.append('-L')
+            elif moves.split()[i] == '-L':
+                reversed_moves.append('L')
+            elif moves.split()[i] == 'U':
+                reversed_moves.append('-U')
+            elif moves.split()[i] == '-U':
+                reversed_moves.append('U')
+            elif moves.split()[i] == 'F':
+                reversed_moves.append('-F')
+            elif moves.split()[i] == '-F':
+                reversed_moves.append('F')
+            elif moves.split()[i] == 'B':
+                reversed_moves.append('-B')
+            elif moves.split()[i] == '-B':
+                reversed_moves.append('B')
+            else:
+                reversed_moves.append(moves.split()[i])
+            i -= 1
+
+        return ' '.join(reversed_moves)
 
     def corners_info(self):
         X = 'b o y'.split()  # where the pieces should go
@@ -449,31 +496,41 @@ class RubiksCube:
             return 'X_corner'
 
 
-        def corner_info(corner):
-            if corner == A:
-                '''Finish writing this'''
-                '''Finish writing this'''
-                '''Finish writing this'''
-                '''Finish writing this'''
-                '''Finish writing this'''
-
         def corner_solve(corner):
+            case_1_right = 'R U2 -R U2 -F U F'.split() #Yellow on top
+            case_1_left = '-L U2 L U2 F -U -F'.split() #Yellow on top
+            case_2_right = 'U R -U -R'.split() #Yellow on side
+            case_2_left = '-U -L U L'.split() #Yellow on side
+
             location = find_corner(corner)
-            if location in {'U_corner', 'V_corner', 'W_corner', 'X_corner'}:
-                remove_from_bottom(location)
-                location = find_corner(corner)
+            if location in {'U_corner', 'V_corner', 'W_corner', 'X_corner'}: #Check if corner is at the bottom
+                remove_from_bottom(location) #Remove from bottom if true
 
-            '''Finish writing this'''
-            '''Finish writing this'''
-            '''Finish writing this'''
-            '''Finish writing this'''
-            '''Finish writing this'''
 
-        corner_solve(W)
+            if corner == X:
+                while find_corner(X) != 'A_corner':
+                   self.turn('U')
+                #if
 
 
 
 
+                '''Finish writing this'''
+                '''Finish writing this'''
+                '''Finish writing this'''
+                '''Finish writing this'''
+                '''Finish writing this'''
+
+
+
+
+
+
+        corner_solve(X)
+
+
+    def display_moves(self):
+        print(self.simplify_moves(' '.join(self.turn_history)))
 
 
 
@@ -514,7 +571,6 @@ def main():
 
 
 
-
     moves = ''.split()
     for move in moves:
         cube.turn(move)
@@ -522,6 +578,7 @@ def main():
     print(cube_state())
     print("L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' R2 D2 R B D2") # Cross solved
     print(cube.turn_history)
+    print(cube.display_moves())
     # L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' D2 R F' R2 D L2 (Original)
 if __name__ == '__main__':
     main()
