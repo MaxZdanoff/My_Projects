@@ -65,8 +65,24 @@ class RubiksCube:
         return sorted(list(map(str, [self.bottomSide[2][2], self.backSide[2][0], self.rightSide[2][2]])))
 
     @property
-    def X_corner(self):
+    def X_corner(self): #Backside listed twice. Still works.
         return sorted(list(map(str, [self.backSide[2][0], self.backSide[2][2], self.leftSide[2][0]])))
+
+    @property
+    def A_slot_edge(self):
+        return sorted(list(map(str, [self.backSide[1][2], self.leftSide[1][0]])))
+
+    @property
+    def B_slot_edge(self):
+        return sorted(list(map(str, [self.backSide[1][0], self.rightSide[1][2]])))
+
+    @property
+    def C_slot_edge(self):
+        return sorted(list(map(str, [self.frontSide[1][2], self.rightSide[1][0]])))
+
+    @property
+    def D_slot_edge(self):
+        return sorted(list(map(str, [self.frontSide[1][0], self.leftSide[1][2]])))
 
     def turn(self, side):
         self.turn_history.append(side)
@@ -503,7 +519,7 @@ class RubiksCube:
 
         return reversed_moves
 
-    def corners_info(self):
+    def corners_solve(self):
         X = 'b o y'.split()  # where the pieces should go
         W = 'b r y'.split()
         U = 'g o y'.split()
@@ -612,6 +628,7 @@ class RubiksCube:
                 if is_corner_solved(X):
                     corner_solve_alg.append(' '.join(self.rotate_moves(case, 'back'))) #If solved append moves to list
                     return print(f"X_corner: {self.simplify_moves(' '.join(corner_solve_alg))}") #Print for debugging
+                    #return self.simplify_moves(' '.join(corner_solve_alg))
                 else:
                     for move in self.undo_moves(self.rotate_moves(case, 'back')): #If not solved undo moves
                         self.turn(move)
@@ -648,6 +665,7 @@ class RubiksCube:
                 if is_corner_solved(U):
                     corner_solve_alg.append(' '.join(case))  # If solved append moves to list
                     return print(f"U_corner: {self.simplify_moves(' '.join(corner_solve_alg))}")  # Print for debugging
+                    #return self.simplify_moves(' '.join(corner_solve_alg))
                 else:
                     for move in self.undo_moves(case):  # If not solved undo moves
                         self.turn(move)
@@ -683,6 +701,7 @@ class RubiksCube:
                 if is_corner_solved(V):
                     corner_solve_alg.append(' '.join(case))  # If solved append moves to list
                     return print(f"V_corner: {self.simplify_moves(' '.join(corner_solve_alg))}")  # Print for debugging
+                    #return self.simplify_moves(' '.join(corner_solve_alg))
                 else:
                     for move in self.undo_moves(case):  # If not solved undo moves
                         self.turn(move)
@@ -719,6 +738,7 @@ class RubiksCube:
                 if is_corner_solved(W):
                     corner_solve_alg.append(' '.join(self.rotate_moves(case, 'back')))  # If solved append moves to list
                     return print(f"W_corner: {self.simplify_moves(' '.join(corner_solve_alg))}")  # Print for debugging
+                    #return self.simplify_moves(' '.join(corner_solve_alg))
                 else:
                     for move in self.undo_moves(self.rotate_moves(case, 'back')):  # If not solved undo moves
                         self.turn(move)
@@ -729,19 +749,30 @@ class RubiksCube:
         V_corner_solve()
         W_corner_solve()
 
+    def edges_solve(self):
+        edge_1 = ['b', 'o']
+        edge_2 = ['b', 'r']
+        edge_3 = ['g', 'r']
+        edge_4 = ['g', 'o']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 cube = RubiksCube()
-
-
-
-
-
-#moves = 'B L2 U2 F L2 B R U R2 -L B2 M2 R2 -D F2 -U F2 R2 -B D2 F2 L2 U F L U2'.split()
-
-
-
-
 def cube_state():
     print("         [" + " ".join(cube.topSide[0, :]) + "]")
     print("         [" + " ".join(cube.topSide[1, :]) + "]")
@@ -758,9 +789,8 @@ def cube_state():
     print("         [" + " ".join(cube.bottomSide[2, :]) + "]")
 
 def main():
-
-    #cube.corners_info()
-
+    cube.create_scramble()
+    cube.corners_solve()
 
 
 

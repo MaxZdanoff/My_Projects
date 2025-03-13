@@ -4,7 +4,7 @@ from Cube_array import cube_state
 
 def test_corners_solve():
     cube.create_scramble()
-    cube.corners_info()
+    cube.corners_solve()
 
     expected = ['y', 'y', 'y', 'y']
     actual = [cube.bottomSide[0][0], cube.bottomSide[0][2], cube.bottomSide[2][0], cube.bottomSide[2][2]]
