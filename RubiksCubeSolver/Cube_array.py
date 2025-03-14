@@ -1,74 +1,100 @@
 
 import numpy as np
-#Current scramble for cube with green as front and white as top
 class RubiksCube:
     def __init__(self):
         self.topSide = np.array([
-            ['r', 'w', 'o'],
-            ['g', 'w', 'b'],
-            ['r', 'r', 'y']
+            ['b', 'r', 'r'],
+            ['o', 'w', 'b'],
+            ['b', 'o', 'w']
         ])
         self.leftSide = np.array([
-            ['y', 'w', 'w'],
-            ['r', 'o', 'r'],
-            ['b', 'o', 'o']
+            ['w', 'w', 'r'],
+            ['r', 'o', 'y'],
+            ['y', 'w', 'o']
        ])
         self.frontSide = np.array([
-            ['g', 'w', 'o'],
-            ['g', 'g', 'g'],
-            ['w', 'g', 'g']
+            ['y', 'g', 'o'],
+            ['g', 'g', 'y'],
+            ['g', 'w', 'r']
         ])
         self.rightSide = np.array([
-            ['b', 'o', 'w'],
-            ['o', 'r', 'o'],
-            ['y', 'r', 'b']
+            ['g', 'o', 'g'],
+            ['r', 'r', 'y'],
+            ['g', 'g', 'w']
        ])
         self.backSide = np.array([
-            ['b', 'b', 'g'],
-            ['w', 'b', 'b'],
-            ['r', 'b', 'r']
+            ['y', 'b', 'o'],
+            ['b', 'b', 'w'],
+            ['b', 'o', 'o']
         ])
         self.bottomSide = np.array([
-            ['g', 'y', 'o'],
-            ['y', 'y', 'y'],
-            ['y', 'y', 'w']
+            ['y', 'b', 'w'],
+            ['g', 'y', 'r'],
+            ['b', 'y', 'r']
         ])
 
         self.turn_history = []
 
+# ---------------------------------CORNERS----------------------------------------------------------------
+    # @property allows you to define something like a method and access it like an attribute. Useful for making complicated attributes
+    # without @property, the attributes will not be updated automatically when the cube is turned
     @property
     def A_corner(self):
         return sorted(list(map(str, [self.topSide[0][0], self.leftSide[0][0], self.backSide[0][2]])))
-
     @property
     def B_corner(self):
         return sorted(list(map(str, [self.topSide[0][2], self.backSide[0][0], self.rightSide[0][2]])))
-
     @property
     def C_corner(self):
         return sorted(list(map(str, [self.topSide[2][2], self.frontSide[0][2], self.rightSide[0][0]])))
-
     @property
     def D_corner(self):
         return sorted(list(map(str, [self.topSide[2][0], self.frontSide[0][0], self.leftSide[0][2]])))
-
     @property
     def U_corner(self):
         return sorted(list(map(str, [self.bottomSide[0][0], self.frontSide[2][0], self.leftSide[2][2]])))
-
     @property
     def V_corner(self):
         return sorted(list(map(str, [self.bottomSide[0][2], self.frontSide[2][2], self.rightSide[2][0]])))
-
     @property
     def W_corner(self):
         return sorted(list(map(str, [self.bottomSide[2][2], self.backSide[2][0], self.rightSide[2][2]])))
-
     @property
     def X_corner(self): #Backside listed twice. Still works.
         return sorted(list(map(str, [self.backSide[2][0], self.backSide[2][2], self.leftSide[2][0]])))
 
+#-------------------------------CROSS EDGES----------------------------------------------------------------
     @property
+    def blue_slot_cross(self):
+        return list(map(str, [self.backSide[2][1], self.bottomSide[2][1]]))
+    @property
+    def red_slot_cross(self):
+        return list(map(str, [self.rightSide[2][1], self.bottomSide[1][2]]))
+    @property
+    def green_slot_cross(self):
+        return list(map(str, [self.frontSide[2][1], self.bottomSide[0][1]]))
+    @property
+    def orange_slot_cross(self):
+        return list(map(str, [self.leftSide[2][1], self.bottomSide[1][0]]))
+    @property
+    def top_blue_slot_cross(self):
+        return list(map(str, [self.backSide[0][1], self.topSide[0][1]]))
+    @property
+    def top_red_slot_cross(self):
+        return list(map(str, [self.rightSide[0][1], self.topSide[1][2]]))
+    @property
+    def top_green_slot_cross(self):
+        return list(map(str, [self.frontSide[0][1], self.topSide[2][1]]))
+    @property
+    def top_orange_slot_cross(self):
+        return list(map(str, [self.leftSide[0][1], self.topSide[1][0]]))
+
+    blue_edge = ('b', 'y')
+    red_edge = ('r', 'y')
+    green_edge = ('g', 'y')
+    orange_edge = ('o', 'y')
+#--------------------------------------------------------------------------------------------------------
+    ''''@property
     def A_slot_edge(self):
         return sorted(list(map(str, [self.backSide[1][2], self.leftSide[1][0]])))
 
@@ -82,7 +108,7 @@ class RubiksCube:
 
     @property
     def D_slot_edge(self):
-        return sorted(list(map(str, [self.frontSide[1][0], self.leftSide[1][2]])))
+        return sorted(list(map(str, [self.frontSide[1][0], self.leftSide[1][2]])))'''
 
     def turn(self, side):
         self.turn_history.append(side)
@@ -749,24 +775,70 @@ class RubiksCube:
         V_corner_solve()
         W_corner_solve()
 
-    def edges_solve(self):
-        edge_1 = ['b', 'o']
-        edge_2 = ['b', 'r']
-        edge_3 = ['g', 'r']
-        edge_4 = ['g', 'o']
+
+    def cross(self):
+        print(self.blue_slot_cross)
+        print(self.red_slot_cross)
+        print(self.green_slot_cross)
+        print(self.orange_slot_cross)
 
 
+    def is_cross_edge_solved(self, edge):
+        solved_state = {
+            self.blue_edge: self.blue_slot_cross,
+            self.red_edge: self.red_slot_cross,
+            self.green_edge: self.green_slot_cross,
+            self.orange_edge: self.orange_slot_cross,
+        }
+        if solved_state.get(edge) == list(edge):
+            return True
+        return False
 
 
+    def count_cross_edges_solved(self):
+        counter = 0
+        for edge in [self.blue_edge, self.red_edge, self.green_edge, self.orange_edge]:
+            if self.is_cross_edge_solved(edge):
+                counter += 1
+        return counter
 
 
+    def are_cross_pieces_solved(self):
+        solved_pieces = []
+        move_set = []
+        for i in range(4):
+            self.turn('D')
+            solved_pieces.append(self.count_cross_edges_solved())
+        if solved_pieces.index(max(solved_pieces)) == 3:
+            return
+        elif solved_pieces.index(max(solved_pieces)) == 0:
+            self.turn('D')
+            move_set = ['D']
+            return print(move_set)
+        elif solved_pieces.index(max(solved_pieces)) == 1:
+            self.turn('D2')
+            move_set = ['D2']
+            return print(move_set)
+        elif solved_pieces.index(max(solved_pieces)) == 2:
+            self.turn('-D')
+            move_set = ['-D']
+            return print(move_set)
 
 
+    def solve_top_edges(self):
+        top_edges = {
+            self.blue_edge: self.top_blue_slot_cross,
+            self.red_edge: self.top_red_slot_cross,
+            self.green_edge: self.top_green_slot_cross,
+            self.orange_edge: self.top_orange_slot_cross,
+        }
+        edges_on_top = []
+        for edge in [self.blue_edge, self.red_edge, self.green_edge, self.orange_edge]:
+            if list(edge) in [self.top_blue_slot_cross, self.top_red_slot_cross, self.top_green_slot_cross, self.top_orange_slot_cross]:
+                edges_on_top.append(edge)
 
-
-
-
-
+        if len(edges_on_top) > 0:
+            ''
 
 
 
@@ -789,9 +861,17 @@ def cube_state():
     print("         [" + " ".join(cube.bottomSide[2, :]) + "]")
 
 def main():
-    cube.create_scramble()
-    cube.corners_solve()
+    '''moves = 'L2 -D R2 F -R D2 R2 D2 R B D2'.split() #Solve cross
+    for move in moves:
+        cube.turn(move)'''
 
+    #cube.create_scramble()
+    #cube.corners_solve()
+    #cube.is_cross_edge_solved(cube.orange_edge)
+    cube.count_cross_edges_solved()
+    cube.are_cross_pieces_solved()
+    cube.turn('')
+    cube.solve_top_edges()
 
 
 
@@ -803,11 +883,11 @@ def main():
         cube.turn(move)'''
 
     print(cube_state())
-    print("L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' R2 D2 R B D2") # Cross solved
+    print("L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' D2 R F' R2 D L2") # Cross solved
     print(cube.turn_history)
 
 
-
+    #L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' R2 D2 R B D2 (cross solved)
     # L' D2 L2 D2 U2 B D2 U2 B2 R2 B R U2 F' D2 R F' R2 D L2 (Original)
 if __name__ == '__main__':
     main()
