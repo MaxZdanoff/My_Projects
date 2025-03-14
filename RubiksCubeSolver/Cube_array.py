@@ -357,14 +357,15 @@ class RubiksCube:
         return print(f'Scramble: {scramble}')
 
 
-
-
-
-
-
     @staticmethod
     def simplify_moves(moves):
-        simplified_moves = list(moves.split())
+        if len(moves) == 0:
+            return
+        if isinstance(moves, list):
+            simplified_moves = ' '.join(moves)
+            simplified_moves = list(simplified_moves.split())
+        else:
+            simplified_moves = list(moves.split())
 
         # Sexy move
 
@@ -461,6 +462,12 @@ class RubiksCube:
                     rotated_moves.append('R2')
                 elif moves[i] == '-F':
                     rotated_moves.append('-R')
+                elif moves[i] == 'B':
+                    rotated_moves.append('L')
+                elif moves[i] == 'B2':
+                    rotated_moves.append('L2')
+                elif moves[i] == '-B':
+                    rotated_moves.append('-L')
                 else:
                     rotated_moves.append(moves[i])
                 i += 1
@@ -484,6 +491,12 @@ class RubiksCube:
                     rotated_moves.append('L2')
                 elif moves[i] == '-F':
                     rotated_moves.append('-L')
+                elif moves[i] == 'B':
+                    rotated_moves.append('R')
+                elif moves[i] == 'B2':
+                    rotated_moves.append('R2')
+                elif moves[i] == '-B':
+                    rotated_moves.append('-R')
                 else:
                     rotated_moves.append(moves[i])
                 i += 1
@@ -507,6 +520,12 @@ class RubiksCube:
                     rotated_moves.append('B2')
                 elif moves[i] == '-F':
                     rotated_moves.append('-B')
+                elif moves[i] == 'B':
+                    rotated_moves.append('F')
+                elif moves[i] == 'B2':
+                    rotated_moves.append('F2')
+                elif moves[i] == '-B':
+                    rotated_moves.append('-F')
                 else:
                     rotated_moves.append(moves[i])
                 i += 1
@@ -803,9 +822,17 @@ class RubiksCube:
         return counter
 
 
-    def are_cross_pieces_solved(self):
+    def are_cross_pieces_in_bottom(self):
+        if 'y' in [self.bottomSide[0][1], self.bottomSide[1][2], self.bottomSide[2][1], self.bottomSide[1][0]]:
+            return True
+        return False
+
+
+    def allign_cross_pieces(self):
+        if not self.are_cross_pieces_in_bottom():
+            return
         solved_pieces = []
-        move_set = []
+
         for i in range(4):
             self.turn('D')
             solved_pieces.append(self.count_cross_edges_solved())
@@ -826,6 +853,7 @@ class RubiksCube:
 
 
     def solve_top_edges(self):
+        move_set = []
         top_edges = {
             self.blue_edge: self.top_blue_slot_cross,
             self.red_edge: self.top_red_slot_cross,
@@ -837,10 +865,86 @@ class RubiksCube:
             if list(edge) in [self.top_blue_slot_cross, self.top_red_slot_cross, self.top_green_slot_cross, self.top_orange_slot_cross]:
                 edges_on_top.append(edge)
 
-        if len(edges_on_top) > 0:
-            ''
+        if len(edges_on_top) == 0:
+            return
+        else:
+            for i in range(len(edges_on_top)):
+                while list(edges_on_top[i]) != top_edges.get(edges_on_top[i]):
+                    top_edges = {
+                        self.blue_edge: self.top_blue_slot_cross,
+                        self.red_edge: self.top_red_slot_cross,
+                        self.green_edge: self.top_green_slot_cross,
+                        self.orange_edge: self.top_orange_slot_cross,
+                    }
+                    if list(edges_on_top[i]) == top_edges.get(edges_on_top[i]):
+                        break
+                    self.turn('U')
+                    move_set.append('U')
+                if edges_on_top[i] == self.blue_edge:
+                    self.turn('B2')
+                    move_set.append('B2')
+                elif edges_on_top[i] == self.red_edge:
+                    self.turn('R2')
+                    move_set.append('R2')
+                elif edges_on_top[i] == self.green_edge:
+                    self.turn('F2')
+                    move_set.append('F2')
+                elif edges_on_top[i] == self.orange_edge:
+                    self.turn('L2')
+                    move_set.append('L2')
+
+        return print(f'(Cross Solve) Pieces on top: {self.simplify_moves(move_set)}')
 
 
+    def count_flipped_edges_top(self): #Delete if not used
+        counter = 0
+        edges = [self.blue_edge, self.red_edge, self.green_edge, self.orange_edge]
+        reversed_edges = list(edges[1])  # Create a copy of the list
+        reversed_edges.reverse()  # Reverse it in place
+        for i in range(4):
+            reversed_list = list(edges[i])
+            reversed_list.reverse()
+            if reversed_list in [self.top_blue_slot_cross, self.top_red_slot_cross, self.top_green_slot_cross, self.top_orange_slot_cross]:
+                counter += 1
+        return counter
+
+
+    def solve_flipped_edges_top(self):
+        move_list = []
+        if self.frontSide[0][1] != 'y':
+            i = 0
+            while self.frontSide[0][1] != 'y':
+                self.turn('U')
+                move_list.append('U')
+                if len(move_list) == 4:
+                    return
+
+        if self.topSide[2][1] == 'g':
+            insert_edge = ['-U', '-R', 'F', 'R']
+            for move in insert_edge:
+                self.turn(move)
+                move_list.append(move)
+                move_list = self.simplify_moves(move_list)
+        elif self.topSide[2][1] == 'r':
+            insert_edge = ['F', '-R', '-F']
+            for move in insert_edge:
+                self.turn(move)
+                move_list.append(move)
+                move_list = self.simplify_moves(move_list)
+        elif self.topSide[2][1] == 'o':
+            insert_edge = ['-F', 'L', 'F']
+            for move in insert_edge:
+                self.turn(move)
+                move_list.append(move)
+                move_list = self.simplify_moves(move_list)
+        elif self.topSide[2][1] == 'b':
+            insert_edge = ['-U', 'R', '-B', '-R']
+            for move in insert_edge:
+                self.turn(move)
+                move_list.append(move)
+                move_list = self.simplify_moves(move_list)
+
+        return print(move_list)
 
 
 
@@ -868,11 +972,16 @@ def main():
     #cube.create_scramble()
     #cube.corners_solve()
     #cube.is_cross_edge_solved(cube.orange_edge)
-    cube.count_cross_edges_solved()
-    cube.are_cross_pieces_solved()
-    cube.turn('')
-    cube.solve_top_edges()
+    turns = 'B U2 R -U F U2'.split()
+    for turn in turns:
+        cube.turn(turn)
+    #cube.count_cross_edges_solved()
+    #cube.allign_cross_pieces()
+    #cube.solve_top_edges()
+    #cube.count_flipped_edges_top()
+    cube.solve_flipped_edges_top() #Solves one flipped edge
 
+    #Go through easy cases first. If no more pieces can be solved with easy methods, use flipped edge methods.
 
 
 
