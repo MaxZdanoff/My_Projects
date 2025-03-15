@@ -89,6 +89,30 @@ class RubiksCube:
     def top_orange_slot_cross(self):
         return list(map(str, [self.leftSide[0][1], self.topSide[1][0]]))
 
+    @property
+    def equator_green(self):
+        left = list(map(str, [self.frontSide[1][0], self.leftSide[1][2]]))
+        right = list(map(str, [self.frontSide[1][2], self.rightSide[1][0]]))
+        return [left, right]
+
+    @property
+    def equator_red(self):
+        left = list(map(str, [self.rightSide[1][0], self.frontSide[1][2]]))
+        right = list(map(str, [self.rightSide[1][2], self.backSide[1][0]]))
+        return [left, right]
+
+    @property
+    def equator_blue(self):
+        left = list(map(str, [self.backSide[1][0], self.rightSide[1][2]]))
+        right = list(map(str, [self.backSide[1][2], self.leftSide[1][0]]))
+        return [left, right]
+
+    @property
+    def equator_orange(self):
+        left = list(map(str, [self.leftSide[1][0], self.backSide[1][2]]))
+        right = list(map(str, [self.leftSide[1][2], self.frontSide[1][0]]))
+        return [left, right]
+
     blue_edge = ('b', 'y')
     red_edge = ('r', 'y')
     green_edge = ('g', 'y')
@@ -909,7 +933,7 @@ class RubiksCube:
         return counter
 
 
-    def solve_flipped_edges_top(self):
+    def solve_flipped_edge_top(self):
         move_list = []
         if self.frontSide[0][1] != 'y':
             i = 0
@@ -921,6 +945,7 @@ class RubiksCube:
 
         if self.topSide[2][1] == 'g':
             insert_edge = ['-U', '-R', 'F', 'R']
+
             for move in insert_edge:
                 self.turn(move)
                 move_list.append(move)
@@ -945,6 +970,64 @@ class RubiksCube:
                 move_list = self.simplify_moves(move_list)
 
         return print(move_list)
+
+
+    def one_move_solves_equator(self):
+        one_move_edges = []
+        list1 = [self.green_edge, self.red_edge, self.orange_edge, self.blue_edge]
+        list2 = [self.equator_green, self.equator_red, self.equator_orange, self.equator_blue]
+        for wanted, current in zip(list1, list2):
+            if list(wanted) in current:
+                one_move_edges.append(wanted[0])
+
+        return one_move_edges
+
+
+
+    def solve_side_edges_one_move(self):
+        #count matches in [r, b, g, o] and [colors in equator layer on respective side excluding non-yellow edges and center pieces
+        #(If equator matches is 4, still count 3)
+        #If matches is zero, return
+        #Pick a color and do one repeated move until solved
+        #Check again for matches
+        #If matches is less than original_matches-1, undo all moves and try different combination
+        #Once all are solved, run move_list through simplified_moves()
+        #Look for edges in top layer that can be solved in one move and then solve those
+        #Do recursive call
+        move_list = []
+
+        one_move_solves = len(self.one_move_solves_equator())
+        if one_move_solves > 3:
+            one_move_solves = 3
+
+        for edge in self.one_move_solves_equator():
+            if edge == 'g':
+                solve = []
+                while not self.is_cross_edge_solved(self.green_edge):
+                    self.turn('F')
+                    solve.append('F')
+                if len(self.one_move_solves_equator()) < one_move_solves - 1:
+                    for move in self.undo_moves(solve):
+                        self.turn(move)
+                    break
+                else:
+                    move_list.append(solve)
+
+        return print(move_list)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -972,16 +1055,22 @@ def main():
     #cube.create_scramble()
     #cube.corners_solve()
     #cube.is_cross_edge_solved(cube.orange_edge)
-    turns = 'B U2 R -U F U2'.split()
+    turns = ''.split()
     for turn in turns:
         cube.turn(turn)
     #cube.count_cross_edges_solved()
     #cube.allign_cross_pieces()
     #cube.solve_top_edges()
     #cube.count_flipped_edges_top()
-    cube.solve_flipped_edges_top() #Solves one flipped edge
+    #cube.solve_flipped_edge_top() #Solves one flipped edge
+    cube.one_move_solves_equator()
+    cube.solve_side_edges_one_move()
+
+
 
     #Go through easy cases first. If no more pieces can be solved with easy methods, use flipped edge methods.
+
+    #To do: Make solve_flipped_edges_top() method use less moves for opposite edges, make more cross methods
 
 
 
