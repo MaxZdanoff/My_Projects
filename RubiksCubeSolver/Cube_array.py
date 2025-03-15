@@ -1000,6 +1000,14 @@ class RubiksCube:
         if one_move_solves > 3:
             one_move_solves = 3
 
+        '''dictionary = {
+            'g': [self.green_edge, 'F'],
+            'r': [self.red_edge, 'R'],
+            'o': [self.orange_edge, 'L'],
+            'b': [self.blue_edge, 'B'],
+        }'''
+        edge_pieces = [self.green_edge, self.red_edge, self.orange_edge, self.blue_edge]
+        turns = ['F', 'R', 'L', 'B']
         for edge in self.one_move_solves_equator():
             if edge == 'g':
                 solve = []
