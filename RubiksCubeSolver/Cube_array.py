@@ -943,32 +943,140 @@ class RubiksCube:
                 move_list.append('U')
                 if len(move_list) == 4:
                     return
-        dictionary = {
-            'g': ['U', 'U2', [], ('-U', '-R', 'F', 'R'), ('U', 'L', '-F', '-L')],
-            'r': ['U', '-U', [], ('F', '-R', '-F'), ('U2', '-B', 'R', 'B')],
-            'o': ['U', '-U', [], ('-F', 'L', 'F'), ('U2', 'B', '-L', '-B')],
-            'b': ['U', 'U2', [], ('-U', 'R', '-B', '-R'), ('U', '-L', 'B', 'L')]
-        }
-        for key in dictionary.keys():
+
+        if move_list == ['U']:
+            initial_loc = 'b_edge'
+        elif move_list == ['U', 'U']:
+            initial_loc = 'a_edge'
+        elif move_list == ['U', 'U', 'U']:
+            initial_loc = 'd_edge'
+        else:
+            initial_loc = 'c_edge'
+
+
+        keys = ['g', 'r', 'b', 'o']
+        for key in keys:
             if self.topSide[2][1] != key:
                 continue
-            if self.simplify_moves(move_list) == dictionary.get(key)[0] or self.simplify_moves(move_list) == dictionary.get(key)[1] or move_list == []:
-                insert_edge = list(dictionary.get(key)[3])
+            if key == 'g':
+                if initial_loc == 'b_edge':
+                    if self.is_cross_edge_solved(self.red_edge):
+                        moves = ['-U', '-R', 'F', 'R']
+                        for move in moves:
+                            self.turn(move)
+                        move_list += moves
+                        return self.simplify_moves(move_list)
+                    else:
+                        moves = ['-U', '-R', 'F']
+                    for move in moves:
+                        self.turn(move)
+                    move_list += moves
+                    return self.simplify_moves(move_list)
+                if initial_loc == 'd_edge' or initial_loc == 'c_edge' or initial_loc == 'a_edge':
+                    if self.is_cross_edge_solved(self.orange_edge):
+                        if not self.is_cross_edge_solved(self.red_edge) and initial_loc != 'd_edge':
+                            moves = ['-U', '-R', 'F']
+                            for move in moves:
+                                self.turn(move)
+                                move_list += moves
+                                return self.simplify_moves(move_list)
+                        moves = ['U', 'L', '-F', '-L']
+                    else:
+                        moves = ['U', 'L', '-F']
+                    for move in moves:
+                        self.turn(move)
+                    move_list += moves
+                    return self.simplify_moves(move_list)
 
-                for move in insert_edge:
-                    self.turn(move)
-                    move_list.append(move)
-                    move_list = self.simplify_moves(move_list)
+            elif key == 'r':
+                if initial_loc == 'a_edge':
+                    if self.is_cross_edge_solved(self.blue_edge):
+                        moves = ['U2', '-B', 'R', 'B']
+                        for move in moves:
+                            self.turn(move)
+                        move_list += moves
+                        return self.simplify_moves(move_list)
+                    else:
+                        moves = ['U2', '-B', 'R']
+                    for move in moves:
+                        self.turn(move)
+                    move_list += moves
+                    return self.simplify_moves(move_list)
+                if initial_loc == 'd_edge' or initial_loc == 'c_edge' or initial_loc == 'b_edge':
+                    if self.is_cross_edge_solved(self.green_edge):
+                        if not self.is_cross_edge_solved(self.blue_edge) and initial_loc != 'c_edge':
+                            moves = ['U2', '-B', 'R']
+                            for move in moves:
+                                self.turn(move)
+                                move_list += moves
+                                return self.simplify_moves(move_list)
+                        moves = ['F', '-R', '-F']
+                    else:
+                        moves = ['F', '-R']
+                    for move in moves:
+                        self.turn(move)
+                    move_list += moves
+                    return self.simplify_moves(move_list)
 
-                return move_list
-            else:
-                insert_edge = list(dictionary.get(key)[4])
-                for move in insert_edge:
-                    self.turn(move)
-                    move_list.append(move)
-                    move_list = self.simplify_moves(move_list)
+            elif key == 'b':
+                if initial_loc == 'd_edge':
+                    if self.is_cross_edge_solved(self.orange_edge):
+                        moves = ['U', '-L', 'B', 'L']
+                        for move in moves:
+                            self.turn(move)
+                        move_list += moves
+                        return self.simplify_moves(move_list)
+                    else:
+                        moves = ['U', '-L', 'B']
+                    for move in moves:
+                        self.turn(move)
+                    move_list += moves
+                    return self.simplify_moves(move_list)
+                if initial_loc == 'b_edge' or initial_loc == 'c_edge' or initial_loc == 'a_edge':
+                    if self.is_cross_edge_solved(self.red_edge):
+                        if not self.is_cross_edge_solved(self.orange_edge) and initial_loc != 'b_edge':
+                            moves = ['U', '-L', 'B']
+                            for move in moves:
+                                self.turn(move)
+                                move_list += moves
+                                return self.simplify_moves(move_list)
+                        moves = ['-U', 'R', '-B', '-R']
+                    else:
+                        moves = ['-U', 'R', '-B']
+                    for move in moves:
+                        self.turn(move)
+                    move_list += moves
+                    return self.simplify_moves(move_list)
 
-                return move_list
+            elif key == 'o':
+                if initial_loc == 'a_edge':
+                    if self.is_cross_edge_solved(self.blue_edge):
+                        moves = ['U2', 'B', '-L', '-B']
+                        for move in moves:
+                            self.turn(move)
+                        move_list += moves
+                        return self.simplify_moves(move_list)
+                    else:
+                        moves = ['U2', 'B', '-L']
+                    for move in moves:
+                        self.turn(move)
+                    move_list += moves
+                    return self.simplify_moves(move_list)
+                if initial_loc == 'b_edge' or initial_loc == 'd_edge' or initial_loc == 'c_edge':
+                    if self.is_cross_edge_solved(self.green_edge):
+                        if not self.is_cross_edge_solved(self.green_edge) and initial_loc != 'c_edge':
+                            moves = ['U2', 'B', '-L']
+                            for move in moves:
+                                self.turn(move)
+                                move_list += moves
+                                return self.simplify_moves(move_list)
+                        moves = ['-F', 'L', 'F']
+                    else:
+                        moves = ['-F', 'L']
+                    for move in moves:
+                        self.turn(move)
+                    move_list += moves
+                    return self.simplify_moves(move_list)
 
 
     def one_move_solves_equator(self):
@@ -1094,14 +1202,12 @@ def cube_state():
     print("         [" + " ".join(cube.bottomSide[2, :]) + "]")
 
 def main():
-    '''moves = 'L2 -D R2 F -R D2 R2 D2 R B D2'.split() #Solve cross
-    for move in moves:
-        cube.turn(move)'''
+
 
     #cube.create_scramble()
     #cube.corners_solve()
     #cube.is_cross_edge_solved(cube.orange_edge)
-    turns = '-L U2'.split()
+    turns = ''.split()
     for turn in turns:
         cube.turn(turn)
     #cube.count_cross_edges_solved()
@@ -1117,7 +1223,6 @@ def main():
     #cube.solve_top_edges()
 
     print(cube.solve_flipped_edge_top())
-
 
     #print(cube.simplify_moves('L2 -U U L -F'))
 
